@@ -7,10 +7,12 @@ namespace CustomersManager.Services
     public class CustomerService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CustomerService> _logger;
 
-        public CustomerService(ApplicationDbContext context)
+        public CustomerService(ApplicationDbContext context, ILogger<CustomerService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         private async Task<bool> TrySaveAsync()
@@ -19,8 +21,9 @@ namespace CustomersManager.Services
             {
                 return await _context.SaveChangesAsync() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return false;
             }
         }
@@ -33,8 +36,9 @@ namespace CustomersManager.Services
 
                 return await TrySaveAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return false;
             }
         }
@@ -45,8 +49,9 @@ namespace CustomersManager.Services
             {
                 return await _context.Customers.AsNoTracking().ToListAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return null;
             }
         }
@@ -57,8 +62,9 @@ namespace CustomersManager.Services
             {
                 return await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return null;
             }
         }
@@ -78,8 +84,9 @@ namespace CustomersManager.Services
 
                 return await TrySaveAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return false;
             }
         }
@@ -101,8 +108,9 @@ namespace CustomersManager.Services
 
                 return await TrySaveAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return false;
             }
         }

@@ -1,4 +1,5 @@
-﻿using CustomersManager.Models;
+﻿using System.Text.Json;
+using CustomersManager.Models;
 using CustomersManager.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,15 @@ namespace CustomersManager.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly CustomerService _customerService;
+        private readonly ILogger<CustomerController> _logger;
 
-        public CustomerController(CustomerService customerService)
+        public CustomerController(
+            CustomerService customerService,
+            ILogger<CustomerController> logger
+        )
         {
             _customerService = customerService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -30,6 +36,10 @@ namespace CustomersManager.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _customerService.GetCustomersAsync();
+
+            _logger.LogInformation(
+                $"Requesting customers info: {JsonSerializer.Serialize(result, new JsonSerializerOptions() { WriteIndented = true })}"
+            );
 
             return result != null
                 ? Ok(new { message = "Customers found", customers = result })
